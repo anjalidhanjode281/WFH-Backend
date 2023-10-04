@@ -31,7 +31,7 @@ router.get('/device', async (req, res) => {
         osInfo,
         disk,
       };
-  
+      //  res.send("Device")
       res.json(deviceInfo);
     } catch (error) {
       console.error(error);
@@ -49,6 +49,7 @@ router.get('/device', async (req, res) => {
         res.status(500).send(stderr);
         return;
       }
+      res.send("Internet")
       res.send(stdout);
     });
   });
@@ -69,7 +70,7 @@ router.get('/battery-report', (req, res) => {
         res.status(500).send('Failed to read battery report');
         return;
       }
-
+      
       res.send(data); // Send the content of the HTML file as a response
     });
   });
