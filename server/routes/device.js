@@ -5,6 +5,7 @@ const express = require('express');
 const router = express.Router();
 const si = require('systeminformation');
 const { exec } = require('child_process');
+const axios = require('axios');
 
 
 router.get('/device', async (req, res) => {
@@ -39,20 +40,29 @@ router.get('/device', async (req, res) => {
     }
   });
 
-  router.get('/internet-speed', (req, res) => {
-    exec('speedtest -f json', (error, stdout, stderr) => {
-      if (error) {
-        res.status(500).send(error.toString());
-        return;
-      }
-      if (stderr) {
-        res.status(500).send(stderr);
-        return;
-      }
-      res.send("Internet")
-      res.send(stdout);
-    });
-  });
+
+ 
+router.get('/internet-speed', async (req, res) => {
+    const fileSizeInBytes = 5000000; // example: 5MB
+    const url = 'https://github.com/anjalidhanjode281/starter-express-api/archive/refs/heads/main.zip'; // Replace with a link to your file
+
+    const startTime = new Date().getTime();
+
+    try {
+        await axios.get(url, { responseType: 'arraybuffer' }); // Download the file
+
+        const endTime = new Date().getTime();
+        const durationInSeconds = (endTime - startTime) / 1000;
+        const speedMbps = (fileSizeInBytes * 8) / (durationInSeconds * 1000000);
+
+        res.json({
+            speed: `${speedMbps.toFixed(2)} Mbps`
+        });
+    } catch (error) {
+        console.error('Error during speed test:', error);
+        res.status(500).send('Failed to conduct speed test');
+    }
+});
 
 router.get('/battery-report', (req, res) => {
   const reportPath = path.join(__dirname, 'battery-report.html'); // Specify the full path where the report should be generated
